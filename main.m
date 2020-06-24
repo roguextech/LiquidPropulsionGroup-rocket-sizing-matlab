@@ -3,7 +3,7 @@
 % Rocket Sizing for the Liquid Propulsion Group @ Sacramento State
 clear;
 
-table = readtable('test.xlsx');
+table = readtable('heat_engine_params');
 
 chemistry = Chemistry.empty(0,height(table));
 for i = 1:height(table)
@@ -22,21 +22,21 @@ for i = 1:height(table)
 end
 
 %single mdot
-in_mdot = 1; % input('mdot (kg/s): ');
-in_lstar = 0.11; % input('Input L* (m): ');
+in_mdot = 0.5; % input('mdot (kg/s): ');
+in_lstar = 1.1; % input('Input L* (m): ');
 
 rockets = Rocket.empty(0,height(table));
 for i = 1:height(table)
-   rockets(i) = Rocket(chemistry(i),in_mdot, in_lstar, 30, 0.3);
+   rockets(i) = Rocket(chemistry(i),in_mdot, in_lstar, 30, 0.08);
 end
 
-rockets(3).update(1.1, 0.22, 15, 0.15);
+%rockets.update(1.1, 0.22, 15, 0.15);
 
-ch_rad = rockets(3).chamber_diameter/2;
-ch_leng = rockets(3).chamber_length;
-con_len = rockets(3).converging_length;
-thr_rad = rockets(3).d_thr/2;
-noz_rad = rockets(3).d_noz/2;
+ch_rad = rockets.chamber_diameter/2;
+ch_leng = rockets.chamber_length;
+con_len = rockets.converging_length;
+thr_rad = rockets.d_thr/2;
+noz_rad = rockets.d_noz/2;
 
 trace_y = [0 ch_rad ch_rad  thr_rad];
 trace_x = [0 0      ch_leng ch_leng+con_len];
@@ -54,5 +54,17 @@ trace_y = horzcat(trace_y, trace_y_bot);
 
 fprintf('test');
 
-figure
-plot(trace_x, trace_y);
+% figure
+% plot(trace_x, trace_y);
+
+contour_arrays = rockets.generateContour(0.04,0.04014);
+%disp(rockets.contour);
+%rockets.contour=rockets.contour.*1000;
+
+figure(1)
+plot(rockets.contour(1,:), rockets.contour(2,:),'-o');
+axis equal
+
+figure(2)
+plot(contour_arrays(1,:), contour_arrays(2,:));
+axis equal
